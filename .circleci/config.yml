@@ -14,18 +14,20 @@ jobs:
   build:
     working_directory: ~/SimpleApplication
     docker:
-      - image: circleci/node:10.16.3
+      - image: circleci/node:latest
     steps:
       - checkout
+        # Install dependencies
       - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@5'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: install-npm
+          name: Install Node.js dependencies
           command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
+
+      # Install Truffle globally
+      - run:
+          name: Install Truffle
+          command: npm install -g truffle
+
+      # Execute your tests or Truffle commands
+      - run:
+          name: Run tests
+          command: npm test
