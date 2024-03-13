@@ -2,32 +2,23 @@ version: 2.1
 
 workflows:
   version: 2
-  build:
-    jobs:
-      - build:
-        filters:
-          branches:
-            only:
-              - main
 
 jobs:
   build:
-    working_directory: ~/SimpleApplication
+    working_directory: ~/ExampleApplication
     docker:
-      - image: circleci/node:latest
+      - image: cimg/node:10.16.3
     steps:
       - checkout
-        # Install dependencies
       - run:
-          name: Install Node.js dependencies
+          name: update-npm
+          command: 'sudo npm install -g npm@5'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: install-npm
           command: npm install
-
-      # Install Truffle globally
-      - run:
-          name: Install Truffle
-          command: npm install -g truffle
-
-      # Execute your tests or Truffle commands
-      - run:
-          name: Run tests
-          command: npm test
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
